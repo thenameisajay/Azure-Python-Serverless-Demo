@@ -1,0 +1,14 @@
+CREATE TABLE users (
+    name VARCHAR(50),
+    email VARCHAR(100),
+    password TEXT(250)
+);
+
+CREATE TABLE test_users (
+    name VARCHAR(50),
+    email VARCHAR(100),
+    password TEXT(250)
+);
+
+
+

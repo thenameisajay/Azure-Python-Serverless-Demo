@@ -1,0 +1,25 @@
+services:
+    pgsql:
+      container_name: base1_pgsql
+      image: bitnami/postgresql:15-debian-11
+      ports:
+        - '5432:5432'
+      environment:
+          POSTGRES_USER: kevon
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: azure
+      volumes:
+        - ./pgdata_master:/bitnami/postgresql
+      restart: unless-stopped
+      networks:
+        base1net:
+          ipv4_address: 172.111.11.10
+ 
+ 
+networks:
+  base1net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.111.11.0/24
+ 
