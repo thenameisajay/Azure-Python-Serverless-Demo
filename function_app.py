@@ -2,6 +2,7 @@ import azure.functions as func
 import logging
 import azure_psql_functions as db
 import bcrypt
+import json
  
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
  
@@ -34,7 +35,13 @@ def hello(req: func.HttpRequest) -> func.HttpResponse:
         name = 'World'
  
     # Respond with a personalized greeting
-    return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
+    # json object with Hello World as value and key as message
+    response = {'message': f"Hello, {name}!"}
+    return func.HttpResponse(
+            json.dumps(response),
+            mimetype="application/json"
+        )
+    # return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
 
 @app.route(route="addUser")
 def AddUser(req: func.HttpRequest) -> func.HttpResponse:
@@ -238,6 +245,8 @@ def ValidateUser(req: func.HttpRequest) -> func.HttpResponse:
     try:
         if db.validate_user(email, password):
             return func.HttpResponse(f"User has been validated.")
+        elif None:
+            return func.HttpResponse(f"User does not exist.")
         else:
             return func.HttpResponse(f"User has not been validated.")
     except Exception as e:
