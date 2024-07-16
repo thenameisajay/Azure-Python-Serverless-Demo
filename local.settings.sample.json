@@ -4,11 +4,9 @@
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "python",
     "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
-     "POSTGRES_USER": "",
-    "POSTGRES_PASSWORD": "",
-    "POSTGRES_DB": ""
-
-
+    "POSTGRES_USER": "ajay",
+    "POSTGRES_PASSWORD": "ajay",
+    "POSTGRES_DB": "test"
   },
   "Host": {
     "CORS": "*"
