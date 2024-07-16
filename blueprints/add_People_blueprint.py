@@ -98,9 +98,6 @@ def add_people(req: func.HttpRequest) -> func.HttpResponse:
             conn.commit()
 
     try:
-        print(os.getenv('POSTGRES_DB'))
-        print(os.getenv('POSTGRES_USER'))
-        print(os.getenv('POSTGRES_PASSWORD'))
         conn = create_client()
         create_table_if_not_exists(conn)
         insert_people(conn, people_to_add)
