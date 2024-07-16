@@ -25,34 +25,42 @@ def database_connection():
         logging.info(f"Database Connection: Error connecting to the database: {e}")
         return None
 
-def check_table(name):
-    conn = database_connection()
+def check_table(name, conn):
+    # conn = database_connection()
+    # connection from calling function is preserved
     if conn is None:
         logging.info("Check Table: Failed to connect to database.")
         return None
     try:
         cur = conn.cursor()
         query = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)"
-        cur.execute(query)
-        conn.commit()
-        print(f"Table exists.")
-        logging.info("Check Table: Table exists.")
-        return True
+        cur.execute(query, (name,))
+        exists = cur.fetchone()[0]
+        cur.close()
+        if exists:
+            logging.info(f"Check Table: Table {name} exists.")
+            return True
+        else:
+            logging.info(f"Check Table: Table {name} does not exist.")
+            return False
     except psycopg2.Error as e:
-        print(f"Table {name} does not exist.")
+        logging.info(f"Check Table Error: {e}")
         return False
 
-def create_table(name):
-    conn = database_connection()
+
+def create_table(name, conn):
+    logging.info("Create Table: Creating table...")
+    # connection from function calling this one is preserved.
+    # conn = database_connection()
     if conn is None:
         logging.info("Create Table: Failed to connect to database.")
         return None
     try:
-        if not check_table(name):
+        logging.info("Create Table: Connection object created. Checking for existence of table...")
+        if not check_table(name, conn):
             logging.info(f"Create Table: Creating table '{name}'...")
             cur = conn.cursor()
             logging.info(f"Create Table: Cursor created.")
-            logging.info(f"Create Table: Connection objec - {conn.info}")
             query = f"CREATE TABLE {name} (name VARCHAR(255), email VARCHAR(255), password VARCHAR(255));"
             logging.info(f"Create Table: Query: \"{query}\"")
             logging.info("Create Table: Executing query...")
@@ -66,14 +74,14 @@ def create_table(name):
             return True
     except psycopg2.Error as e:
         logging.info(f"Create Table: Error creating table: {e}")
-        logging.info("Create Table: Failed to create table.")
         return False
     finally:
-        cur.close()
-        conn.close()
+        pass
+        # cur.close()
+        # conn.close()
 
 
-def drop_table(name):
+def drop_table(name, conn):
     conn = database_connection()
     if conn is None:
         logging.info("Failed to connect to database.")
@@ -89,8 +97,9 @@ def drop_table(name):
         logging.info("Failed to drop table.")
         return False
     finally:
-        cur.close()
-        conn.close()
+        pass
+        # cur.close()
+        # conn.close()
 
 ## Password checking
 

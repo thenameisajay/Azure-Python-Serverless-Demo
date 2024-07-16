@@ -12,16 +12,22 @@ def create_user(name, email, password):
         logging.info("Create User: Failed to connect to database.")
         return None
     try:
+        logging.info("Create User: Setting cursor...")
         cur = conn.cursor()
         # create table
-        dbu.create_table("users")
+        logging.info("Create User: Creating table...")
+        dbu.create_table("users", conn)
         # create user
+        logging.info("Create User: Checking if user already exists...")
         if get_user(email,"users"):
             logging.info(f"Create User: User with email {email} already exists.")
             return False
         else:
+            logging.info("Create User: User does not exist. Creating user...")
+            # create user
             query = "INSERT INTO public.users (name, email, password) VALUES (%s, %s, %s)"
             # hash password
+            logging.info("Create User: Hashing password...")
             password = password.encode('utf-8')
             salt = bcrypt.gensalt()
             hashed_password = bcrypt.hashpw(password, salt)
@@ -45,36 +51,32 @@ def create_user(name, email, password):
 def create_test_user(name, email, password):
     conn = dbu.database_connection()
     if conn is None:
-        logging.info("Failed to connect to database.")
+        logging.info("Create Test User: Failed to connect to database.")
         return None
-
     try:
+        logging.info("Create Test User: Setting cursor...")
         cur = conn.cursor()
-        conn = dbu.database_connection()
-        if conn is None:
-            logging.info("Create User: Failed to connect to database.")
-            return None
-        try:
-        # check table exists, if not create table def create_user(name, email, password):
-            cur = conn.cursor()
-            # create table (function will check if table exists)
-            return dbu.create_table("users")
-            # create user
-            if get_user(email,"users"):
-                logging.info(f"Create User: User with email {email} already exists.")
-                return False
-        except:
-            logging.info("Create User: Error creating table.")
+        # create table
+        logging.info("Create Test User: Creating table...")
+        dbu.create_table("users", conn)
+        # create user
+        logging.info("Create Test User: Checking if user already exists...")
+        if get_user(email,"test_users"):
+            logging.info(f"Create Test User: User with email {email} already exists.")
             return False
         else:
-            query = "INSERT INTO public.users (name, email, password) VALUES (%s, %s, %s)"
+            logging.info("Create Test User: User does not exist. Creating user...")
+            # create user
+            query = "INSERT INTO public.test_users (name, email, password) VALUES (%s, %s, %s)"
             # hash password
+            logging.info("Create User: Hashing password...")
             password = password.encode('utf-8')
             salt = bcrypt.gensalt()
             hashed_password = bcrypt.hashpw(password, salt)
-            now = datetime.now()
 
-            # values = (name, email, hashed_password)/
+            # values = (name, "ROLE_ADMIN", hashed_password, email, updated_by, now, datetime.now(), NotImplemented, None, last_login, confirmation_token)
+            values = (name, email, hashed_password)
+            # values = (name, email, password)
             cur.execute(query, values)
             conn.commit()
             print(f"Create User: User with email \"{email}\" created successfully.")
@@ -85,21 +87,6 @@ def create_test_user(name, email, password):
         logging.info(f"Create User: Error creating user: {e}.")
         return False
     finally:
-        cur.close()
-        conn.close()
-        logging.info("Encoding password...")
-        password = password.encode('utf-8')
-        logging.info("Generating salt...")
-        salt = bcrypt.gensalt()
-        logging.info(f"salt = {salt}")
-        logging.info("Hashing password...")
-        hashed_password = bcrypt.hashpw(password, salt)
-        values = (name, email, hashed_password.decode('utf-8'))
-        # values = (name, email, password)
-        cur.execute(query, values)
-        conn.commit()
-        print(f"User with email {email} created successfully.")
-        return True   
         cur.close()
         conn.close()
 
@@ -199,42 +186,3 @@ def get_all_users():
         conn.close()
 
 ## FIXED FUNCTIONS
-
-def fixed_create_user(name, email, password):
-    conn = dbu.database_connection()
-    if conn is None:
-        logging.info("Create User: Failed to connect to database.")
-        return None
-    try:
-        cur = conn.cursor()
-        # create table
-        dbu.create_table("users")
-        # create user
-        if get_user(email,"users"):
-            logging.info(f"Create User: User with email {email} already exists.")
-            return False
-        else:
-            query = "INSERT INTO public.users (name, email, password) VALUES (%s, %s, %s)"
-            # query = "INSERT INTO public.users (username, roles, password, email, created_by, updated_by, created_at, updated_at, nicename, gdpr, last_login, confirmation_token, password_requested_at, invite_sent, disabled_date, auth_code, successful_logins, disable_mfa, profile_image_id, avatar, language, chat_open) VALUES (%s, %s, %s, %s, %s, %s %s, %s, %s, %s, %s, %s  %s, %s, %s, %s, %s, %s, %s)"
-            # query = "INSERT INTO public.users ()"
-            # hash password
-            password = password.encode('utf-8')
-            salt = bcrypt.gensalt()
-            hashed_password = bcrypt.hashpw(password, salt)
-            now = datetime.now()
-
-            # values = (name, "ROLE_ADMIN", hashed_password, email, updated_by, now, datetime.now(), nicename, gdpr, last_login, confirmation_token)
-            values = (name, email, hashed_password)
-            # values = (name, email, password)
-            cur.execute(query, values)
-            conn.commit()
-            print(f"Create User: User with email \"{email}\" created successfully.")
-            logging.info("Create User: User created successfully.")
-            return True
-        return False
-    except psycopg2.Error as e:
-        logging.info(f"Create User: Error creating user: {e}.")
-        return False
-    finally:
-        cur.close()
-        conn.close()

@@ -54,9 +54,11 @@ def AddUser(req: func.HttpRequest) -> func.HttpResponse:
 
     # If not found in query parameters, check if it's in the body of a POST request
     if not name:
+        logging.info("AddUser: Name not found in HTTP request. Checking form data...")
         content_type = req.headers.get('Content-Type', '')
 
         if 'application/x-www-form-urlencoded' in content_type:
+            logging.info("AddUser: Form data detected. Parsing...")
             # Access form data
             form_data = req.form
             name = form_data.get('name')
@@ -68,13 +70,17 @@ def AddUser(req: func.HttpRequest) -> func.HttpResponse:
         else:
             # Handle JSON data
             try:
+                logging.info("AddUser: No form data provided. Trying to parse JSON data...")
                 req_body = req.get_json()
                 name = req_body.get('name')
                 email = req_body.get('email')
                 password = req_body.get('password')
             except ValueError:
                 # Handle the case where the body is not valid JSON or is empty
-                pass
+                logging.info("AddUser: Invalid JSON data in request body.")
+                logging.info("AddUser: No request information found. PLease try again.")
+                return func.HttpResponse("No request information found. Please try again.")
+                
     # database interaction
     try:
         created_user = db.create_user(name, email, password)
