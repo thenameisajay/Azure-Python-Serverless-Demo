@@ -3,23 +3,24 @@ import os
 import logging
 from dotenv import load_dotenv, find_dotenv
 
+logger = logging.getLogger(__name__)
+
 load_dotenv()
 
 DB_NAME = os.getenv("POSTGRES_DB")
-# DB_USER = os.getenv("POSTGRES_USER")
-# DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+DB_USER = os.getenv("POSTGRES_USER")
+DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 DB_PORT = 5432
-
-# Testing Purposes :
-DB_USER='tester'
-DB_PASSWORD='tester'
-
-print('DB_NAME', DB_NAME)
-print('DB_USER', DB_USER)
-print('DB_PASSWORD', DB_PASSWORD)
+logger.info('DB_NAME')
+logger.info(DB_NAME)
+logger.info('DB_USER')
+logger.info(DB_USER)
+logger.info('DB_PASSWORD')
+logger.info(DB_PASSWORD)
 
 
 def create_client():
+    logger.info("create client is run")
     try:
         client = psycopg2.connect(
             dbname=DB_NAME,
@@ -28,7 +29,7 @@ def create_client():
             port=DB_PORT,
             host='localhost'
         )
-        logging.info("Connected to PostgreSQL")
+        logger.info("Connected to PostgreSQL")
         return client
     except Exception as err:
         logging.error(f"Error connecting to PostgreSQL: {err}")
