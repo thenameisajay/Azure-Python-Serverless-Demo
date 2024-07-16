@@ -14,7 +14,7 @@ DB_PORT = 5432
 
 
 def create_client():
-    logger.info("create client is run")
+    logger.info("create client is running")
     try:
         client = psycopg2.connect(
             dbname=DB_NAME,
