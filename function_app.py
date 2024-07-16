@@ -45,7 +45,7 @@ def hello(req: func.HttpRequest) -> func.HttpResponse:
 
 @app.route(route="addUser")
 def AddUser(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+    logging.info('AddUser: Python HTTP trigger function processed a request.')
 
     # Check if name is provided in query parameters
     name = req.params.get('name')
@@ -62,7 +62,8 @@ def AddUser(req: func.HttpRequest) -> func.HttpResponse:
             name = form_data.get('name')
             email = form_data.get('email')
             password = form_data.get('password')
-            # add more fields as requried
+            # add more fields as required
+
             # pass parameters into function that adds email to database
         else:
             # Handle JSON data
@@ -76,18 +77,12 @@ def AddUser(req: func.HttpRequest) -> func.HttpResponse:
                 pass
     # database interaction
     try:
-        db.create_user(name, email, password)
+        created_user = db.create_user(name, email, password)
+        if not created_user:
+            logging.info(f"AddUser: User with email {email} already exists.")
     except Exception as e:
-        print(f"Error creating user: {e}")
         return func.HttpResponse(f"User has not been added to database. Please try again.")
-
-
-    # If still no name, use the default value
-    if not name:
-        name = 'World'
-        email = "default@gmail.com"
-        return func.HttpResponse(f"Your email has not been added. Please try again.")
-
+    
     # Respond with a personalized greeting
     return func.HttpResponse(f"Hello, {name}. Your email is {email}.")
 
@@ -181,7 +176,6 @@ def GetUser(req: func.HttpRequest) -> func.HttpResponse:
 
      # Check if name is provided in query parameters
     email = req.params.get('email')
-
     # If not found in query parameters, check if it's in the body of a POST request
     if not email:
         content_type = req.headers.get('Content-Type', '')
@@ -202,7 +196,12 @@ def GetUser(req: func.HttpRequest) -> func.HttpResponse:
                 pass
 
     # database interaction
-    user = db.get_user(email)
+    table_name = "users"
+    if table_name:
+        pass
+    else:
+        table_name = "users"
+    user = db.get_user(email,table_name)
 
     # If still no name, use the default value
     if not email:
@@ -222,6 +221,7 @@ def ValidateUser(req: func.HttpRequest) -> func.HttpResponse:
 
     # If not found in query parameters, check if it's in the body of a POST request
     if not email:
+        logging.info("Email not provided.")
         content_type = req.headers.get('Content-Type', '')
 
         if 'application/x-www-form-urlencoded' in content_type:
@@ -234,6 +234,7 @@ def ValidateUser(req: func.HttpRequest) -> func.HttpResponse:
         else:
             # Handle JSON data
             try:
+                logging.info("Trying to get JSON data.")
                 req_body = req.get_json()
                 email = req_body.get('email')
                 password = req_body.get('password')
