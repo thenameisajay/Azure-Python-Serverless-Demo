@@ -1,13 +1,10 @@
 import logging
-import os
 import azure.functions as func
 from services.db_connection import create_client
 
 bp = func.Blueprint('add_people')
 
-
-@bp.route('add_people', methods=['GET'])  # Change to POST as it is more appropriate for adding data but for now it is
-# GET
+@bp.route('add_people', methods=['GET'])  # Change to POST as it is more appropriate for adding data but for now it is GET
 def add_people(req: func.HttpRequest) -> func.HttpResponse:
     people_to_add = [
         {
@@ -80,21 +77,30 @@ def add_people(req: func.HttpRequest) -> func.HttpResponse:
                 sex CHAR(1),
                 occupation VARCHAR(100),
                 relationship_status VARCHAR(20),
-                salary NUMERIC
+                salary NUMERIC,
+                UNIQUE (first_name, last_name, date_of_birth)  -- Ensure unique combination
             )
             """)
             conn.commit()
 
+    def person_exists(conn, first_name, last_name, date_of_birth):
+        with conn.cursor() as cur:
+            cur.execute("""
+            SELECT 1 FROM people WHERE first_name = %s AND last_name = %s AND date_of_birth = %s
+            """, (first_name, last_name, date_of_birth))
+            return cur.fetchone() is not None
+
     def insert_people(conn, people):
         with conn.cursor() as cur:
             for person in people:
-                cur.execute("""
-                INSERT INTO people (first_name, last_name, age, date_of_birth, country, sex, occupation, relationship_status, salary)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (
-                    person['first_name'], person['last_name'], person['age'], person['date_of_birth'],
-                    person['country'],
-                    person['sex'], person['occupation'], person['relationship_status'], person['salary']))
+                if not person_exists(conn, person['first_name'], person['last_name'], person['date_of_birth']):
+                    cur.execute("""
+                    INSERT INTO people (first_name, last_name, age, date_of_birth, country, sex, occupation, relationship_status, salary)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        person['first_name'], person['last_name'], person['age'], person['date_of_birth'],
+                        person['country'],
+                        person['sex'], person['occupation'], person['relationship_status'], person['salary']))
             conn.commit()
 
     try:

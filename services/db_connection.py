@@ -1,11 +1,18 @@
 import psycopg2
 import os
 import logging
+from dotenv import load_dotenv, find_dotenv
 
-DB_NAME = os.environ.get('POSTGRES_DB')
-DB_USER = os.environ.get('POSTGRES_USER')
-DB_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
+load_dotenv()
+
+DB_NAME = os.getenv("POSTGRES_DB")
+# DB_USER = os.getenv("POSTGRES_USER")
+# DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 DB_PORT = 5432
+
+# Testing Purposes :
+DB_USER='tester'
+DB_PASSWORD='tester'
 
 print('DB_NAME', DB_NAME)
 print('DB_USER', DB_USER)
