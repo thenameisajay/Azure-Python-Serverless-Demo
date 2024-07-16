@@ -5,5 +5,5 @@
 azure-functions
 psycopg2-binary
 python-dotenv
-bcrypt
-datetime
+bcrypt~=4.1.3
+datetime~=5.5

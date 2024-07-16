@@ -141,3 +141,7 @@ pgdata_master
 
 # Docker volumes
 data/
+pgdata/
+
+# IntelliJ
+.idea/
