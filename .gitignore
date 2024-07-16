@@ -137,3 +137,11 @@ __azurite_db*__.json
 
 pgdata_master
 *.json
+
+
+# Docker volumes
+data/
+pgdata/
+
+# IntelliJ
+.idea/
