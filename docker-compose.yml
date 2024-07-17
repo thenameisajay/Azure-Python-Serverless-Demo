@@ -1,6 +1,6 @@
 services:
     pgsql:
-      container_name: base1_pgsql_python
+      container_name: pgsql_python
       image: bitnami/postgresql:16-debian-12
       ports:
         - '5432:5432'
