@@ -5,6 +5,7 @@ from services.db_connection import create_client
 
 bp = func.Blueprint('validate_user')
 
+
 @bp.route(route="validate_user", methods=['POST'])
 def validate_user(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function (validate_user) processed a request.')
@@ -19,7 +20,7 @@ def validate_user(req: func.HttpRequest) -> func.HttpResponse:
 
     if 'application/x-www-form-urlencoded' in content_type:
         # Access form data
-        form_data = req.form()
+        form_data = req.form
         email = form_data.get('email')
         password = form_data.get('password')
     else:
@@ -77,7 +78,7 @@ def validate_user(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         logging.error(f'Failed to authenticate the credentials: {str(e)}')
         return func.HttpResponse(
-            'Failed to authenticate the credentials',
+            'Failed to authenticate the credentials!',
             status_code=500
         )
 
