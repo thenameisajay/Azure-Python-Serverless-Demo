@@ -59,8 +59,6 @@ Examples of these files are provided in the repository.
 
 3. **Set up Azure Functions:**
 
-   Navigate to the `api` folder and install dependencies:
-
    Create a Python virtual environment in the project root, run:
 
    ```bash
@@ -70,7 +68,7 @@ Examples of these files are provided in the repository.
 
 4. **Install the Python dependencies:**
 
-   From the `api` folder, run:
+   From the root, run:
 
    ```bash
    python3 -m pip install -r requirements.txt
@@ -98,11 +96,12 @@ Examples of these files are provided in the repository.
 - **get_people:** [GET] `http://localhost:7071/api/people`
 - **hello:** [GET, POST] `http://localhost:7071/api/hello`
 - **validate_user:** [POST] `http://localhost:7071/api/validate_user`
+- **add_user:** [POST] `http://localhost:7071/api/add_user`
 
 ## Testing and Usage
 
 - Use Postman or any other API testing tool to test the endpoints.
-- Enter your name to see it reflected, indicating the endpoint is working.
+- Enter your name to see it reflected(api/hello) via [POST] request, indicating the endpoint is working.
 - Click the "Populate Data" button to insert sample data of 5 people into the database.
 - Click the "Delete Data" button to remove the data.
 - Click the "View Data" button to view the data.
