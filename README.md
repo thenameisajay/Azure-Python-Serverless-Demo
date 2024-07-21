@@ -12,6 +12,7 @@ This repository contains a project that integrates Azure Functions with a Postgr
 - Docker
 - Azure Functions Core Tools
 - Azure Functions extension for VS Code
+- Python3 (ideally 3.11.xx)
 
 ## Environment Variables
 
@@ -63,7 +64,6 @@ Examples of these files are provided in the repository.
    Create a Python virtual environment in the project root, run:
 
    ```bash
-   cd api
    python3 -m venv ./venv
    source ./venv/bin/activate
    ```
