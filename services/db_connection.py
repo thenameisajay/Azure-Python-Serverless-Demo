@@ -21,7 +21,7 @@ def create_client():
             user=DB_USER,
             password=DB_PASSWORD,
             port=DB_PORT,
-            host='localhost'
+            host="localhost",
         )
         logger.info("Connected to PostgreSQL")
         return client

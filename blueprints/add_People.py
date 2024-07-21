@@ -2,9 +2,12 @@ import logging
 import azure.functions as func
 from services.db_connection import create_client
 
-bp = func.Blueprint('add_people')
+bp = func.Blueprint("add_people")
 
-@bp.route('add_people', methods=['GET'])  # Change to POST as it is more appropriate for adding data but for now it is GET
+
+@bp.route(
+    "add_people", methods=["GET"]
+)  # Change to POST as it is more appropriate for adding data but for now it is GET
 def add_people(req: func.HttpRequest) -> func.HttpResponse:
     people_to_add = [
         {
@@ -66,7 +69,8 @@ def add_people(req: func.HttpRequest) -> func.HttpResponse:
 
     def create_table_if_not_exists(conn):
         with conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(
+                """
             CREATE TABLE IF NOT EXISTS people (
                 id SERIAL PRIMARY KEY,
                 first_name VARCHAR(50),
@@ -80,27 +84,46 @@ def add_people(req: func.HttpRequest) -> func.HttpResponse:
                 salary NUMERIC,
                 UNIQUE (first_name, last_name, date_of_birth)  -- Ensure unique combination
             )
-            """)
+            """
+            )
             conn.commit()
 
     def person_exists(conn, first_name, last_name, date_of_birth):
         with conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(
+                """
             SELECT 1 FROM people WHERE first_name = %s AND last_name = %s AND date_of_birth = %s
-            """, (first_name, last_name, date_of_birth))
+            """,
+                (first_name, last_name, date_of_birth),
+            )
             return cur.fetchone() is not None
 
     def insert_people(conn, people):
         with conn.cursor() as cur:
             for person in people:
-                if not person_exists(conn, person['first_name'], person['last_name'], person['date_of_birth']):
-                    cur.execute("""
+                if not person_exists(
+                    conn,
+                    person["first_name"],
+                    person["last_name"],
+                    person["date_of_birth"],
+                ):
+                    cur.execute(
+                        """
                     INSERT INTO people (first_name, last_name, age, date_of_birth, country, sex, occupation, relationship_status, salary)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """, (
-                        person['first_name'], person['last_name'], person['age'], person['date_of_birth'],
-                        person['country'],
-                        person['sex'], person['occupation'], person['relationship_status'], person['salary']))
+                    """,
+                        (
+                            person["first_name"],
+                            person["last_name"],
+                            person["age"],
+                            person["date_of_birth"],
+                            person["country"],
+                            person["sex"],
+                            person["occupation"],
+                            person["relationship_status"],
+                            person["salary"],
+                        ),
+                    )
             conn.commit()
 
     try:
@@ -108,13 +131,9 @@ def add_people(req: func.HttpRequest) -> func.HttpResponse:
         create_table_if_not_exists(conn)
         insert_people(conn, people_to_add)
         conn.close()
-        return func.HttpResponse(
-            "People added successfully",
-            status_code=200
-        )
+        return func.HttpResponse("People added successfully", status_code=200)
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         return func.HttpResponse(
-            "An error occurred while adding people",
-            status_code=500
+            "An error occurred while adding people", status_code=500
         )

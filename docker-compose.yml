@@ -1,25 +1,23 @@
 services:
-    pgsql:
-      container_name: pgsql_python
-      image: bitnami/postgresql:16-debian-12
-      ports:
-        - '5432:5432'
-      environment:
-          POSTGRES_USER:  ${POSTGRES_USER}
-          POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD}
-          POSTGRES_DB: ${POSTGRES_DB}
-      volumes:
-        - ./pgdata:/bitnami/postgresql/data
-      restart: unless-stopped
-      networks:
-        dockernet:
-          ipv4_address: 172.122.11.10
- 
- 
+  pgsql:
+    container_name: pgsql_python
+    image: bitnami/postgresql:16-debian-12
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./pgdata:/bitnami/postgresql/data
+    restart: unless-stopped
+    networks:
+      dockernet:
+        ipv4_address: 172.122.11.10
+
 networks:
   dockernet:
     ipam:
       driver: default
       config:
         - subnet: 172.122.11.0/24
- 

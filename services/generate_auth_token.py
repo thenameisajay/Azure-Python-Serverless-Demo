@@ -8,7 +8,7 @@ def generate_auth_object(length=32, expiry_hours=8):
     # Generate a secure random byte string
     token_bytes = secrets.token_bytes(length)
     # Encode the byte string to a URL-safe base64 format
-    token = base64.urlsafe_b64encode(token_bytes).rstrip(b'=').decode('utf-8')
+    token = base64.urlsafe_b64encode(token_bytes).rstrip(b"=").decode("utf-8")
 
     # Get the current time
     now = datetime.now()
@@ -17,9 +17,9 @@ def generate_auth_object(length=32, expiry_hours=8):
     expiry = now + timedelta(hours=expiry_hours)
 
     return {
-        'token': token,
-        'issued_at': now.isoformat(),
-        'expires_at': expiry.isoformat()
+        "token": token,
+        "issued_at": now.isoformat(),
+        "expires_at": expiry.isoformat(),
     }
 
 

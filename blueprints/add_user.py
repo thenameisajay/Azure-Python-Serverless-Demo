@@ -4,35 +4,37 @@ import json
 import azure.functions as func
 from services.db_connection import create_client
 
-bp = func.Blueprint('add_user')
+bp = func.Blueprint("add_user")
 
 
-@bp.route(route="add_user", methods=['POST'])
+@bp.route(route="add_user", methods=["POST"])
 def add_user(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("Attempting to retrieve parameters from URL...")
-    name = req.params.get('name')
-    email = req.params.get('email')
+    name = req.params.get("name")
+    email = req.params.get("email")
 
     if not name:
         logging.info("AddUser: Name not found in HTTP request. Checking form data...")
-        content_type = req.headers.get('Content-Type', '')
+        content_type = req.headers.get("Content-Type", "")
 
-        if 'application/x-www-form-urlencoded' in content_type:
+        if "application/x-www-form-urlencoded" in content_type:
             logging.info("AddUser: Form data detected. Parsing...")
             # Access form data
             form_data = req.form
-            name = form_data.get('name')
-            email = form_data.get('email')
-            password = form_data.get('password')
+            name = form_data.get("name")
+            email = form_data.get("email")
+            password = form_data.get("password")
 
         else:
             # Handle JSON data
             try:
-                logging.info("AddUser: No form data provided. Trying to parse JSON data...")
+                logging.info(
+                    "AddUser: No form data provided. Trying to parse JSON data..."
+                )
                 req_body = req.get_json()
-                name = req_body.get('name')
-                email = req_body.get('email')
-                password = req_body.get('password')
+                name = req_body.get("name")
+                email = req_body.get("email")
+                password = req_body.get("password")
             except ValueError:
                 # Handle the case where the body is not valid JSON or is empty
                 pass
@@ -41,7 +43,9 @@ def add_user(req: func.HttpRequest) -> func.HttpResponse:
                 password = None
                 logging.info("AddUser: Invalid JSON data in request body.")
                 logging.info("AddUser: No request information found. PLease try again.")
-                return func.HttpResponse("No request information found. Please try again.")
+                return func.HttpResponse(
+                    "No request information found. Please try again."
+                )
     # perform checks for credentials
     if not name:
         logging.info("AddUser: Name not provided.")
@@ -63,8 +67,8 @@ def add_user(req: func.HttpRequest) -> func.HttpResponse:
         # Check if the table exists and create it if it doesn't
         table_exists_query = """
             SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_schema = 'public' 
+                SELECT FROM information_schema.tables
+                WHERE table_schema = 'public'
                 AND table_name = 'user'
             );
         """
@@ -118,45 +122,47 @@ def add_user(req: func.HttpRequest) -> func.HttpResponse:
 
         if user_exists:
             logging.info(f"User '{name}' already exists. Skipping insertion.")
-            return func.HttpResponse(
-                f"User '{name}' already exists.",
-                status_code=200
-            )
+            return func.HttpResponse(f"User '{name}' already exists.", status_code=200)
 
         if not user_exists:
             # No existing user found, insert the test user
             logging.info("No existing user found. Inserting user...")
             logging.info("Hashing password...")
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            hashed_password = bcrypt.hashpw(
+                password.encode("utf-8"), bcrypt.gensalt()
+            ).decode("utf-8")
 
             insert_user_query = """
                 INSERT INTO "user" (username, roles, password, email, created_by, updated_by, created_at, updated_at, nicename, gdpr, last_login, confirmation_token, password_requested_at, invite_sent, disabled_date, auth_code, successful_logins, disable_mfa, profile_image_id, avatar, language, chat_open)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
-            cur.execute(insert_user_query, [
-                name,
-                json.dumps(['ROLE_ADMIN']),
-                hashed_password,  # Use the hashed password
-                email,
-                "system",
-                "system",
-                "now",
-                "now",
-                "User",
-                False,
-                None,
-                None,
-                None,
-                False,
-                None,
-                None,
-                0,
-                False,
-                None,
-                None,
-                "en",
-                True,
-            ])
+            cur.execute(
+                insert_user_query,
+                [
+                    name,
+                    json.dumps(["ROLE_ADMIN"]),
+                    hashed_password,  # Use the hashed password
+                    email,
+                    "system",
+                    "system",
+                    "now",
+                    "now",
+                    "User",
+                    False,
+                    None,
+                    None,
+                    None,
+                    False,
+                    None,
+                    None,
+                    0,
+                    False,
+                    None,
+                    None,
+                    "en",
+                    True,
+                ],
+            )
 
         conn.commit()  # Commit the transaction
         logging.info(f"User {name} added successfully.")
@@ -167,8 +173,7 @@ def add_user(req: func.HttpRequest) -> func.HttpResponse:
 
         # Return an error response
         return func.HttpResponse(
-            'An error occurred. Please try again.',
-            status_code=500
+            "An error occurred. Please try again.", status_code=500
         )
 
     finally:
@@ -176,7 +181,4 @@ def add_user(req: func.HttpRequest) -> func.HttpResponse:
             conn.close()  # Close the database connection
             # Return a success response
 
-    return func.HttpResponse(
-        'User added successfully',
-        status_code=200
-    )
+    return func.HttpResponse("User added successfully", status_code=200)

@@ -2,7 +2,7 @@
 
 ## Repository Description
 
-This repository contains a project that integrates Azure Functions with a PostgreSQL database using Python. It provides a set of API endpoints for managing a list of people, demonstrating how to deploy and run serverless functions with database connectivity on Azure. 
+This repository contains a project that integrates Azure Functions with a PostgreSQL database using Python. It provides a set of API endpoints for managing a list of people, demonstrating how to deploy and run serverless functions with database connectivity on Azure.
 
 ## Prerequisites
 
@@ -108,6 +108,7 @@ Examples of these files are provided in the repository.
 - Click the "View Data" button to view the data.
 
 ## Tests via Postman :
+
 [Postman Collection](https://elements.getpostman.com/redirect?entityId=27211746-2b090b22-f910-4ec4-8b28-3e5648894f6a&entityType=collection)
 
 This guide provides the steps needed to clone the repository, set up the PostgreSQL database, configure Azure Functions, and access the API endpoints for testing and usage.

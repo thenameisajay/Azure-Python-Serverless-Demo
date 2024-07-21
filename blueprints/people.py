@@ -3,10 +3,10 @@ import azure.functions as func
 import logging
 from services.db_connection import create_client
 
-bp = func.Blueprint('people')
+bp = func.Blueprint("people")
 
 
-@bp.route('people', methods=['GET'])
+@bp.route("people", methods=["GET"])
 def get_people(req: func.HttpRequest) -> func.HttpResponse:
     try:
         # Create a database connection
@@ -34,15 +34,16 @@ def get_people(req: func.HttpRequest) -> func.HttpResponse:
 
         # Return the response with the people data in JSON format
         return func.HttpResponse(
-            json.dumps(people, default=str),  # Convert datetime objects to string if needed
+            json.dumps(
+                people, default=str
+            ),  # Convert datetime objects to string if needed
             status_code=200,
-            mimetype="application/json"
+            mimetype="application/json",
         )
 
     except Exception as e:
         # Log the error and return a 500 response
         logging.error(f"An error occurred while retrieving people: {str(e)}")
         return func.HttpResponse(
-            "An error occurred while retrieving people",
-            status_code=500
+            "An error occurred while retrieving people", status_code=500
         )
