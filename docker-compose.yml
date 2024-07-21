@@ -12,12 +12,12 @@ services:
         - ./pgdata:/bitnami/postgresql/data
       restart: unless-stopped
       networks:
-        base1net:
+        dockernet:
           ipv4_address: 172.122.11.10
  
  
 networks:
-  base1net:
+  dockernet:
     ipam:
       driver: default
       config:
