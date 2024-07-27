@@ -2,6 +2,7 @@ import logging
 import secrets
 import base64
 from datetime import datetime, timedelta
+from services.db_connection import create_client
 
 
 def generate_auth_object(length=32, expiry_hours=8):
@@ -43,7 +44,7 @@ def create_auth_table(cur, conn):
         logging.info(create_table_query)
         cur.execute(create_table_query)
         conn.commit()
-        logging.info("Auth Table created successfully.")
+        logging.info("Table created successfully.")
 
     except Exception as e:
         logging.error(f"Error creating table: {e}")
